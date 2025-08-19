@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Summer Mood Journal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes fadeInZoom {
+      0% { opacity: 0; transform: scale(0.8); }
+      50% { opacity: 1; transform: scale(1.05); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+    .animate-fadeInZoom { animation: fadeInZoom 1.5s ease forwards; }
+
+    @keyframes fadeOut {
+      from { opacity: 1; }
+      to { opacity: 0; visibility: hidden; }
+    }
+    .animate-fadeOut { animation: fadeOut 1s ease forwards; }
+  </style>
+</head>
+<body class="bg-gradient-to-r from-pink-300 via-yellow-200 to-green-300 min-h-screen flex items-center justify-center">
+
+  <!-- Intro Splash Screen -->
+  <div id="intro" class="fixed inset-0 flex flex-col items-center justify-center bg-gradient-to-r from-yellow-300 via-pink-300 to-orange-300 z-50">
+    <h1 class="text-4xl md:text-6xl font-extrabold text-white drop-shadow-lg animate-fadeInZoom">
+      ☀️ Let’s Review Your Summer Mood 🌴
+    </h1>
+    <p class="mt-4 text-white text-lg">Get ready to mix flavors, track moods & journal ✨</p>
+  </div>
+
+  <!-- Main App -->
+  <div id="app" class="hidden bg-white/95 p-8 rounded-2xl shadow-2xl w-full max-w-2xl text-center border-4 border-pink-400 overflow-y-auto">
+    <h1 class="text-3xl font-bold text-pink-600 mb-4">🍦 Summer Flavor Mixer 🍹</h1>
+    <p class="mb-6 text-gray-700">Pick two flavors and I'll create a fun summer combo!</p>
+
+    <!-- Flavor Selectors -->
+    <div class="mb-6 flex justify-center gap-4">
+      <select id="flavor1" class="p-3 border-2 border-pink-400 bg-pink-100 rounded-lg text-pink-700 font-semibold">
+        <option value="Vanilla">🍦 Vanilla</option>
+        <option value="Chocolate">🍫 Chocolate</option>
+        <option value="Strawberry">🍓 Strawberry</option>
+        <option value="Mango">🥭 Mango</option>
+        <option value="Mint">🌿 Mint</option>
+      </select>
+      <select id="flavor2" class="p-3 border-2 border-yellow-400 bg-yellow-100 rounded-lg text-yellow-700 font-semibold">
+        <option value="Vanilla">🍦 Vanilla</option>
+        <option value="Chocolate">🍫 Chocolate</option>
+        <option value="Strawberry">🍓 Strawberry</option>
+        <option value="Mango">🥭 Mango</option>
+        <option value="Mint">🌿 Mint</option>
+      </select>
+    </div>
+
+    <!-- Mix Button -->
+    <button onclick="mixFlavors()" 
+      class="bg-gradient-to-r from-pink-500 via-red-400 to-yellow-400 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transform transition">
+      🎉 Mix It!
+    </button>
+
+    <!-- Result Box -->
+    <div id="result" class="mt-6 text-2xl font-extrabold text-white p-4 rounded-xl shadow-lg bg-gradient-to-r from-purple-400 via-pink-400 to-orange-400 hidden"></div>
+
+    <!-- Mood Tracker -->
+    <h2 class="text-2xl font-bold text-green-600 mt-10">🌞 Summer Mood & Journal</h2>
+    <p class="text-gray-700 mb-4">Pick a date, mood, and write your one-line journal ✍️</p>
+
+    <!-- Calendar -->
+    <input type="date" id="moodDate" class="p-2 border-2 border-green-400 rounded-lg mb-4">
+
+    <!-- Mood Buttons -->
+    <div class="flex justify-center gap-4 mb-4">
+      <button onclick="setMood('😴 Relaxed')" class="px-4 py-2 bg-blue-200 rounded-xl hover:bg-blue-300">😴 Relaxed</button>
+      <button onclick="setMood('😎 Chill')" class="px-4 py-2 bg-yellow-200 rounded-xl hover:bg-yellow-300">😎 Chill</button>
+      <button onclick="setMood('🤩 Excited')" class="px-4 py-2 bg-pink-200 rounded-xl hover:bg-pink-300">🤩 Excited</button>
+    </div>
+
+    <!-- Journal Input -->
+    <input type="text" id="journalInput" placeholder="Write one line about today..." class="w-full p-3 border-2 border-orange-300 rounded-lg mb-4">
+
+    <!-- Save Button -->
+    <button onclick="saveEntry()" class="bg-gradient-to-r from-green-400 via-teal-400 to-blue-400 text-white px-6 py-3 rounded-xl font-bold shadow-lg hover:scale-105 transform transition">
+      💾 Save Entry
+    </button>
+
+    <!-- Mood + Journal Review -->
+    <div id="reviewSection" class="mt-8 text-left bg-yellow-50 p-4 rounded-xl shadow-inner max-h-60 overflow-y-auto">
+      <h3 class="text-lg font-semibold text-orange-600 mb-2">📅 Your Summer Journal</h3>
+      <ul id="entryList" class="list-disc pl-5 text-gray-700"></ul>
+    </div>
+  </div>
+
+  <script>
+    const funNames = [
+      "Summer Swirl 🌞","Tropical Blast 🌴","Berrylicious 💜","Minty Magic ✨",
+      "Choco-Mango Twist 🍫🥭","Dreamy Delight ☁️","Rainbow Fusion 🌈","Sunset Surprise 🌅"
+    ];
+    let selectedMood = "";
+
+    // Intro logic
+    window.onload = () => {
+      setTimeout(() => {
+        document.getElementById("intro").classList.add("animate-fadeOut");
+        setTimeout(() => {
+          document.getElementById("intro").style.display = "none";
+          document.getElementById("app").classList.remove("hidden");
+        }, 1000);
+      }, 2500); // shows intro for 2.5s
+      document.getElementById("moodDate").value = new Date().toISOString().split('T')[0];
+      loadEntries();
+    };
+
+    // Flavor Mixer
+    function mixFlavors() {
+      const f1 = document.getElementById("flavor1").value;
+      const f2 = document.getElementById("flavor2").value;
+      let resultText;
+      if ((f1 === "Chocolate" && f2 === "Strawberry") || (f1 === "Strawberry" && f2 === "Chocolate")) {
+        resultText = "🍫 Chocolate + 🍓 Strawberry = Berry Choco Hug 🤎🍓";
+      } else if ((f1 === "Vanilla" && f2 === "Strawberry") || (f1 === "Strawberry" && f2 === "Vanilla")) {
+        resultText = "🍦 Vanilla + 🍓 Strawberry = Cupid's Cone 💘";
+      } else {
+        const randomName = funNames[Math.floor(Math.random() * funNames.length)];
+        resultText = `${f1} + ${f2} = ${randomName}!`;
+      }
+      const resultDiv = document.getElementById("result");
+      resultDiv.classList.remove("hidden");
+      resultDiv.innerText = resultText;
+    }
+
+    function setMood(mood) {
+      selectedMood = mood;
+      alert("Mood set: " + mood);
+    }
+
+    function saveEntry() {
+      const date = document.getElementById("moodDate").value || new Date().toISOString().split('T')[0];
+      const journal = document.getElementById("journalInput").value.trim();
+      if (!selectedMood && !journal) {
+        alert("Please select a mood or write something!");
+        return;
+      }
+      const entries = JSON.parse(localStorage.getItem("summerJournal")) || [];
+      entries.push({ date, mood: selectedMood || "🙂 Neutral", note: journal || "No note" });
+      localStorage.setItem("summerJournal", JSON.stringify(entries));
+      loadEntries();
+      document.getElementById("journalInput").value = "";
+    }
+
+    function loadEntries() {
+      const entries = JSON.parse(localStorage.getItem("summerJournal")) || [];
+      const listEl = document.getElementById("entryList");
+      listEl.innerHTML = "";
+      entries.forEach(entry => {
+        const li = document.createElement("li");
+        li.textContent = `${entry.date}: ${entry.mood} — ${entry.note}`;
+        listEl.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
