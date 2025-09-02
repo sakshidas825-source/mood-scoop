@@ -1,11 +1,7 @@
 {
-  "id": "mood-scoop",
-  "name": "Mood-Scoop",
-  "url": "https://sakshidas825-source.github.io/mood-scoop/",
+  "accountAssociation": { ... },
+  "frame": { ... },
   "baseBuilder": {
-    "allowedAddresses": [
-      "0xD02719367cAD9796091524e8FB7Ba8886eB553B8"
-    ]
+    "allowedAddresses": ["0xD02719367cAD9796091524e8FB7Ba8886eB553B8"]
   }
 }
-
