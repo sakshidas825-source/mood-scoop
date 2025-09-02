@@ -1,7 +1,15 @@
 {
-  "accountAssociation": { ... },
-  "frame": { ... },
+  "id": "mood-scoop",
+  "name": "Mood-Scoop",
+  "description": "Track your summer moods with scoops of ice-cream 🍦",
+  "url": "https://sakshidas825-source.github.io/mood-scoop/",
+  "developer": {
+    "name": "Sakshi Das",
+    "url": "https://github.com/sakshidas825-source"
+  },
   "baseBuilder": {
-    "allowedAddresses": ["0xD02719367cAD9796091524e8FB7Ba8886eB553B8"]
+    "allowedAddresses": [
+      "0xD02719367cAD9796091524e8FB7Ba8886eB553B8"
+    ]
   }
 }
